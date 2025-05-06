@@ -404,6 +404,19 @@
             color: var(--white);
         }
 
+        /* Configurações padrão */
+        .default-settings {
+            background-color: var(--secondary-color);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+        }
+
+        .default-settings h3 {
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
         /* Responsividade */
         @media (max-width: 768px) {
             body {
@@ -587,29 +600,48 @@
         
         <!-- Modo Bolos Personalizados -->
         <div id="cake-panel" class="mode-panel">
+            <!-- Configurações padrão para bolos -->
+            <div class="default-settings">
+                <h3><i class="fas fa-cog"></i> Configurações Padrão</h3>
+                <div class="form-group">
+                    <label for="default-mix">Quantidade padrão da mistura pronta (kg):</label>
+                    <input type="number" id="default-mix" min="0.1" step="0.1" value="5">
+                </div>
+                <div class="form-group">
+                    <label for="default-milk">Quantidade padrão de leite (litros):</label>
+                    <input type="number" id="default-milk" min="0.1" step="0.1" value="2.5">
+                </div>
+                <div class="form-group">
+                    <label for="default-eggs">Quantidade padrão de ovos (unidades):</label>
+                    <input type="number" id="default-eggs" min="1" step="1" value="6">
+                </div>
+                <div class="form-group">
+                    <label>Ingredientes opcionais:</label>
+                    <div class="optional-ingredients">
+                        <label><input type="checkbox" id="use-ferment"> Usar fermento</label>
+                        <label><input type="checkbox" id="use-water"> Usar água</label>
+                        <label><input type="checkbox" id="use-extra-milk"> Usar leite extra</label>
+                    </div>
+                </div>
+                <button id="save-defaults" class="btn btn-success">
+                    <i class="fas fa-save"></i> Salvar Configurações
+                </button>
+            </div>
+            
             <div class="form-group">
                 <label for="recipe-name">Nome da Receita:</label>
                 <input type="text" id="recipe-name" placeholder="Ex: Bolo de Chocolate">
             </div>
             
             <div class="form-group">
-                <label for="base-cakes">Quantidade de Bolos na Receita Original:</label>
-                <input type="number" id="base-cakes" min="1" value="1">
-            </div>
-            
-            <div class="form-group">
-                <label>Ingredientes:</label>
-                <div id="cake-ingredients-list" class="ingredients-list">
-                    <!-- Ingredientes serão adicionados aqui -->
+                <label for="desired-mix">Quantidade desejada de mistura pronta (kg):</label>
+                <input type="number" id="desired-mix" min="0.1" step="0.1" placeholder="Digite a quantidade em kg">
+                
+                <div class="quick-multipliers">
+                    <button data-mult="0.5">½x</button>
+                    <button data-mult="1">1x</button>
+                    <button data-mult="2">2x</button>
                 </div>
-                <button id="add-ingredient" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Adicionar Ingrediente
-                </button>
-            </div>
-            
-            <div class="form-group">
-                <label for="desired-cakes">Quantidade de Bolos Desejada:</label>
-                <input type="number" id="desired-cakes" min="1" value="1">
             </div>
             
             <div class="loading-bar" id="cake-loading-bar"></div>
@@ -618,8 +650,8 @@
                 <button id="calculate-cake" class="btn btn-primary">
                     <i class="fas fa-calculator"></i> Calcular
                 </button>
-                <button id="save-cake" class="btn btn-success">
-                    <i class="fas fa-save"></i> Salvar Receita
+                <button id="reset-cake" class="btn btn-danger">
+                    <i class="fas fa-undo"></i> Resetar
                 </button>
             </div>
             
@@ -630,7 +662,7 @@
                         <thead>
                             <tr>
                                 <th>Ingrediente</th>
-                                <th>Quantidade Original</th>
+                                <th>Quantidade Padrão</th>
                                 <th>Quantidade Ajustada</th>
                             </tr>
                         </thead>
@@ -639,9 +671,6 @@
                 </div>
                 
                 <div class="button-group">
-                    <button id="reset-cake" class="btn btn-danger">
-                        <i class="fas fa-undo"></i> Resetar
-                    </button>
                     <button id="print-cake" class="btn btn-accent">
                         <i class="fas fa-print"></i> Imprimir
                     </button>
@@ -750,11 +779,18 @@
         let currentBreadRecipe = null;
         let currentCakeRecipe = {
             name: "",
-            baseAmount: 1,
             ingredients: []
         };
         let favorites = JSON.parse(localStorage.getItem('recipeFavorites')) || {};
         let showOnlyFavorites = false;
+        let defaultCakeSettings = {
+            mixAmount: 5,
+            milkAmount: 2.5,
+            eggsAmount: 6,
+            useFerment: false,
+            useWater: false,
+            useExtraMilk: false
+        };
 
         // Elementos DOM
         const recipeSelect = document.getElementById('recipe-select');
@@ -772,15 +808,18 @@
         const breadLoadingBar = document.getElementById('bread-loading-bar');
 
         // Elementos do modo bolo
-        const addIngredientBtn = document.getElementById('add-ingredient');
-        const cakeIngredientsList = document.getElementById('cake-ingredients-list');
+        const defaultMixInput = document.getElementById('default-mix');
+        const defaultMilkInput = document.getElementById('default-milk');
+        const defaultEggsInput = document.getElementById('default-eggs');
+        const useFermentCheckbox = document.getElementById('use-ferment');
+        const useWaterCheckbox = document.getElementById('use-water');
+        const useExtraMilkCheckbox = document.getElementById('use-extra-milk');
+        const saveDefaultsBtn = document.getElementById('save-defaults');
+        const cakeRecipeNameInput = document.getElementById('recipe-name');
+        const desiredMixInput = document.getElementById('desired-mix');
         const calculateCakeBtn = document.getElementById('calculate-cake');
         const cakeResults = document.getElementById('cake-results');
         const cakeResultsBody = document.getElementById('cake-results-body');
-        const cakeRecipeNameInput = document.getElementById('recipe-name');
-        const baseCakesInput = document.getElementById('base-cakes');
-        const desiredCakesInput = document.getElementById('desired-cakes');
-        const saveCakeBtn = document.getElementById('save-cake');
         const resetCakeBtn = document.getElementById('reset-cake');
         const printCakeBtn = document.getElementById('print-cake');
         const shareCakeBtn = document.getElementById('share-cake');
@@ -838,6 +877,29 @@
             }).catch(err => {
                 showToast('Falha ao copiar: ' + err, 'error');
             });
+        }
+
+        function toggleUnit(element) {
+            const text = element.textContent.split(' ');
+            const value = parseFloat(text[0]);
+            const unit = text[1];
+            
+            if (unit === 'kg') {
+                element.textContent = `${(value * 1000).toFixed(0)} g`;
+            } else if (unit === 'g' && value >= 1000) {
+                element.textContent = `${(value / 1000).toFixed(3)} kg`;
+            } else if (unit === 'litros' || unit === 'litro') {
+                element.textContent = `${(value * 1000).toFixed(0)} ml`;
+            } else if (unit === 'ml' && value >= 1000) {
+                element.textContent = `${(value / 1000).toFixed(2)} litros`;
+            }
+            
+            // Restaura o valor original após 5 segundos
+            setTimeout(() => {
+                if (element.dataset.originalText) {
+                    element.textContent = element.dataset.originalText;
+                }
+            }, 5000);
         }
 
         // ========== MODO PANIFICAÇÃO ==========
@@ -988,29 +1050,6 @@
             }, 300);
         }
 
-        function toggleUnit(element) {
-            const text = element.textContent.split(' ');
-            const value = parseFloat(text[0]);
-            const unit = text[1];
-            
-            if (unit === 'kg') {
-                element.textContent = `${(value * 1000).toFixed(0)} g`;
-            } else if (unit === 'g' && value >= 1000) {
-                element.textContent = `${(value / 1000).toFixed(3)} kg`;
-            } else if (unit === 'litros' || unit === 'litro') {
-                element.textContent = `${(value * 1000).toFixed(0)} ml`;
-            } else if (unit === 'ml' && value >= 1000) {
-                element.textContent = `${(value / 1000).toFixed(2)} litros`;
-            }
-            
-            // Restaura o valor original após 5 segundos
-            setTimeout(() => {
-                if (element.dataset.originalText) {
-                    element.textContent = element.dataset.originalText;
-                }
-            }, 5000);
-        }
-
         function saveBreadRecipe() {
             if (!currentBreadRecipe) {
                 showToast('Nenhuma receita selecionada', 'error');
@@ -1075,142 +1114,134 @@
         // ========== MODO BOLOS ==========
 
         function initCakeMode() {
-            // Carrega a última receita de bolo usada
-            const lastCakeRecipe = JSON.parse(localStorage.getItem('lastCakeRecipe'));
-            if (lastCakeRecipe) {
-                cakeRecipeNameInput.value = lastCakeRecipe.name || '';
-                baseCakesInput.value = lastCakeRecipe.baseAmount || 1;
-                desiredCakesInput.value = lastCakeRecipe.desiredAmount || 1;
-                
-                // Recria os ingredientes
-                lastCakeRecipe.ingredients.forEach(ing => {
-                    addIngredient(ing.name, ing.amount, ing.unit);
-                });
-            } else {
-                // Adiciona um ingrediente inicial
-                addIngredient();
+            // Carrega as configurações padrão
+            const savedSettings = JSON.parse(localStorage.getItem('cakeDefaultSettings'));
+            if (savedSettings) {
+                defaultCakeSettings = savedSettings;
+                defaultMixInput.value = savedSettings.mixAmount;
+                defaultMilkInput.value = savedSettings.milkAmount;
+                defaultEggsInput.value = savedSettings.eggsAmount;
+                useFermentCheckbox.checked = savedSettings.useFerment;
+                useWaterCheckbox.checked = savedSettings.useWater;
+                useExtraMilkCheckbox.checked = savedSettings.useExtraMilk;
             }
+            
+            // Define o valor padrão para a mistura desejada
+            desiredMixInput.value = defaultCakeSettings.mixAmount;
         }
 
-        function addIngredient(name = '', amount = '', unit = 'g') {
-            const ingredientItem = document.createElement('div');
-            ingredientItem.className = 'ingredient-item';
+        function saveDefaultSettings() {
+            defaultCakeSettings = {
+                mixAmount: parseFloat(defaultMixInput.value),
+                milkAmount: parseFloat(defaultMilkInput.value),
+                eggsAmount: parseInt(defaultEggsInput.value),
+                useFerment: useFermentCheckbox.checked,
+                useWater: useWaterCheckbox.checked,
+                useExtraMilk: useExtraMilkCheckbox.checked
+            };
             
-            ingredientItem.innerHTML = `
-                <input type="text" class="ingredient-name" placeholder="Nome (ex: Farinha)" value="${name}">
-                <input type="number" class="ingredient-amount" min="0" step="0.01" placeholder="Quantidade" value="${amount}">
-                <select class="ingredient-unit">
-                    <option value="g" ${unit === 'g' ? 'selected' : ''}>Gramas (g)</option>
-                    <option value="kg" ${unit === 'kg' ? 'selected' : ''}>Quilogramas (kg)</option>
-                    <option value="ml" ${unit === 'ml' ? 'selected' : ''}>Mililitros (ml)</option>
-                    <option value="l" ${unit === 'l' ? 'selected' : ''}>Litros (l)</option>
-                    <option value="xícaras" ${unit === 'xícaras' ? 'selected' : ''}>Xícaras</option>
-                    <option value="colheres" ${unit === 'colheres' ? 'selected' : ''}>Colheres (sopa)</option>
-                    <option value="un" ${unit === 'un' ? 'selected' : ''}>Unidades</option>
-                    <option value="outro" ${unit === 'outro' ? 'selected' : ''}>Outro</option>
-                </select>
-                <button class="btn btn-danger btn-icon btn-remove">
-                    <i class="fas fa-trash"></i>
-                </button>
-            `;
-            
-            cakeIngredientsList.appendChild(ingredientItem);
-            
-            // Adiciona evento de remoção
-            const removeBtn = ingredientItem.querySelector('.btn-remove');
-            removeBtn.addEventListener('click', function() {
-                cakeIngredientsList.removeChild(ingredientItem);
-                showToast('Ingrediente removido', 'success');
-            });
+            localStorage.setItem('cakeDefaultSettings', JSON.stringify(defaultCakeSettings));
+            showToast('Configurações padrão salvas!', 'success');
         }
 
         function calculateCakeRecipe() {
             const recipeName = cakeRecipeNameInput.value || 'Meu Bolo';
-            const baseAmount = parseFloat(baseCakesInput.value);
-            const desiredAmount = parseFloat(desiredCakesInput.value);
+            const desiredMix = parseFloat(desiredMixInput.value);
             
-            if (isNaN(baseAmount) || baseAmount <= 0) {
-                showToast('Digite uma quantidade válida de bolos para a receita original', 'error');
-                return;
-            }
-            
-            if (isNaN(desiredAmount) || desiredAmount <= 0) {
-                showToast('Digite uma quantidade válida de bolos desejada', 'error');
+            if (isNaN(desiredMix) || desiredMix <= 0) {
+                showToast('Digite uma quantidade válida de mistura pronta', 'error');
                 return;
             }
             
             showLoading(cakeLoadingBar);
             
             setTimeout(() => {
-                const ratio = desiredAmount / baseAmount;
-                const ingredients = [];
+                const ratio = desiredMix / defaultCakeSettings.mixAmount;
                 
-                // Coleta todos os ingredientes
-                document.querySelectorAll('#cake-panel .ingredient-item').forEach(item => {
-                    const name = item.querySelector('.ingredient-name').value;
-                    const amount = parseFloat(item.querySelector('.ingredient-amount').value);
-                    const unit = item.querySelector('.ingredient-unit').value;
-                    
-                    if (!name) {
-                        showToast('Alguns ingredientes não têm nome', 'error');
-                        return;
-                    }
-                    
-                    if (isNaN(amount) || amount <= 0) {
-                        showToast(`Quantidade inválida para ${name}`, 'error');
-                        return;
-                    }
-                    
-                    ingredients.push({
-                        name,
-                        originalAmount: amount,
-                        unit,
-                        adjustedAmount: amount * ratio
+                // Cria a lista de ingredientes base
+                const ingredients = [
+                    { name: "Mistura pronta", originalAmount: defaultCakeSettings.mixAmount, unit: "kg", adjustedAmount: desiredMix },
+                    { name: "Leite", originalAmount: defaultCakeSettings.milkAmount, unit: "litros", adjustedAmount: defaultCakeSettings.milkAmount * ratio },
+                    { name: "Ovos", originalAmount: defaultCakeSettings.eggsAmount, unit: "un", adjustedAmount: Math.round(defaultCakeSettings.eggsAmount * ratio) }
+                ];
+                
+                // Adiciona ingredientes opcionais se selecionados
+                if (defaultCakeSettings.useFerment) {
+                    // Fermento em pó - aproximadamente 10g por kg de mistura
+                    const fermentAmount = defaultCakeSettings.mixAmount * 10;
+                    ingredients.push({ 
+                        name: "Fermento em pó", 
+                        originalAmount: fermentAmount, 
+                        unit: "g", 
+                        adjustedAmount: fermentAmount * ratio 
                     });
-                });
+                }
                 
-                if (ingredients.length === 0) {
-                    showToast('Adicione pelo menos um ingrediente', 'error');
-                    hideLoading(cakeLoadingBar);
-                    return;
+                if (defaultCakeSettings.useWater) {
+                    // Água - aproximadamente 20% do leite
+                    const waterAmount = defaultCakeSettings.milkAmount * 0.2;
+                    ingredients.push({ 
+                        name: "Água", 
+                        originalAmount: waterAmount, 
+                        unit: "litros", 
+                        adjustedAmount: waterAmount * ratio 
+                    });
+                }
+                
+                if (defaultCakeSettings.useExtraMilk) {
+                    // Leite extra - aproximadamente 10% do leite principal
+                    const extraMilkAmount = defaultCakeSettings.milkAmount * 0.1;
+                    ingredients.push({ 
+                        name: "Leite extra", 
+                        originalAmount: extraMilkAmount, 
+                        unit: "litros", 
+                        adjustedAmount: extraMilkAmount * ratio 
+                    });
                 }
                 
                 // Atualiza a receita atual
                 currentCakeRecipe = {
                     name: recipeName,
-                    baseAmount: baseAmount,
                     ingredients: ingredients
                 };
                 
                 // Exibe os resultados
-                displayCakeResults(currentCakeRecipe, ratio);
+                displayCakeResults(currentCakeRecipe);
                 
                 hideLoading(cakeLoadingBar);
                 showToast('Receita calculada com sucesso!', 'success');
             }, 300);
         }
 
-        function displayCakeResults(recipe, ratio) {
+        function displayCakeResults(recipe) {
             cakeResultsBody.innerHTML = '';
             
             recipe.ingredients.forEach(ing => {
                 const row = document.createElement('tr');
                 
                 // Formata a quantidade ajustada
-                let adjustedDisplay = ing.adjustedAmount.toFixed(2);
-                if (ing.adjustedAmount % 1 === 0) {
-                    adjustedDisplay = ing.adjustedAmount.toFixed(0);
+                let adjustedDisplay = ing.adjustedAmount;
+                let originalDisplay = ing.originalAmount;
+                
+                // Ajusta a formatação para números inteiros
+                if (ing.unit === 'un') {
+                    adjustedDisplay = Math.round(adjustedDisplay);
+                    originalDisplay = Math.round(originalDisplay);
+                } else {
+                    adjustedDisplay = adjustedDisplay.toFixed(2).replace(/\.?0+$/, '');
+                    originalDisplay = originalDisplay.toFixed(2).replace(/\.?0+$/, '');
                 }
                 
                 row.innerHTML = `
                     <td>${ing.name}</td>
-                    <td>${ing.originalAmount} ${ing.unit}</td>
+                    <td>${originalDisplay} ${ing.unit}</td>
                     <td class="adjusted-value">${adjustedDisplay} ${ing.unit}</td>
                 `;
                 
                 // Adiciona evento de conversão de unidades
                 const adjustedCell = row.querySelector('.adjusted-value');
                 adjustedCell.addEventListener('click', () => toggleUnit(adjustedCell));
+                adjustedCell.dataset.originalText = adjustedCell.textContent;
                 
                 cakeResultsBody.appendChild(row);
             });
@@ -1230,38 +1261,6 @@
             }, 100);
         }
 
-        function saveCakeRecipe() {
-            if (!currentCakeRecipe || currentCakeRecipe.ingredients.length === 0) {
-                showToast('Nenhuma receita para salvar', 'error');
-                return;
-            }
-            
-            const recipeData = {
-                name: cakeRecipeNameInput.value,
-                baseAmount: parseFloat(baseCakesInput.value),
-                desiredAmount: parseFloat(desiredCakesInput.value),
-                ingredients: []
-            };
-            
-            // Coleta todos os ingredientes
-            document.querySelectorAll('#cake-panel .ingredient-item').forEach(item => {
-                const name = item.querySelector('.ingredient-name').value;
-                const amount = parseFloat(item.querySelector('.ingredient-amount').value);
-                const unit = item.querySelector('.ingredient-unit').value;
-                
-                if (name && !isNaN(amount)) {
-                    recipeData.ingredients.push({
-                        name,
-                        amount,
-                        unit
-                    });
-                }
-            });
-            
-            localStorage.setItem('lastCakeRecipe', JSON.stringify(recipeData));
-            showToast('Receita de bolo salva com sucesso!', 'success');
-        }
-
         function shareCakeRecipe() {
             if (!currentCakeRecipe || currentCakeRecipe.ingredients.length === 0) {
                 showToast('Nenhuma receita para compartilhar', 'error');
@@ -1270,8 +1269,6 @@
             
             const recipeData = {
                 name: currentCakeRecipe.name,
-                baseAmount: currentCakeRecipe.baseAmount,
-                desiredAmount: parseFloat(desiredCakesInput.value),
                 ingredients: currentCakeRecipe.ingredients
             };
             
@@ -1280,7 +1277,7 @@
             if (navigator.share) {
                 navigator.share({
                     title: `Receita: ${currentCakeRecipe.name}`,
-                    text: `Confira esta receita de ${currentCakeRecipe.name} para ${desiredCakesInput.value} bolos`,
+                    text: `Confira esta receita de ${currentCakeRecipe.name}`,
                     url: shareUrl
                 }).catch(() => copyToClipboard(shareUrl));
             } else {
@@ -1290,11 +1287,8 @@
 
         function resetCakeRecipe() {
             cakeRecipeNameInput.value = '';
-            baseCakesInput.value = 1;
-            desiredCakesInput.value = 1;
-            cakeIngredientsList.innerHTML = '';
+            desiredMixInput.value = defaultCakeSettings.mixAmount;
             cakeResults.style.display = 'none';
-            addIngredient();
             showToast('Receita resetada', 'success');
         }
 
@@ -1335,8 +1329,8 @@
             toggleFavoritesBtn.addEventListener('click', toggleBreadFavorites);
             breadSearchInput.addEventListener('input', filterBreadRecipes);
 
-            // Multiplicadores rápidos
-            document.querySelectorAll('.quick-multipliers button').forEach(btn => {
+            // Multiplicadores rápidos (pães)
+            document.querySelectorAll('#bread-panel .quick-multipliers button').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const multiplier = parseFloat(btn.dataset.mult);
                     flourInput.value = (parseFloat(flourInput.value) * multiplier).toFixed(1);
@@ -1344,13 +1338,25 @@
                 });
             });
 
+            // Multiplicadores rápidos (bolos)
+            document.querySelectorAll('#cake-panel .quick-multipliers button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const multiplier = parseFloat(btn.dataset.mult);
+                    desiredMixInput.value = (defaultCakeSettings.mixAmount * multiplier).toFixed(1);
+                });
+            });
+
             // Modo bolo
-            addIngredientBtn.addEventListener('click', () => addIngredient());
+            saveDefaultsBtn.addEventListener('click', saveDefaultSettings);
             calculateCakeBtn.addEventListener('click', calculateCakeRecipe);
-            saveCakeBtn.addEventListener('click', saveCakeRecipe);
             resetCakeBtn.addEventListener('click', resetCakeRecipe);
             printCakeBtn.addEventListener('click', () => window.print());
             shareCakeBtn.addEventListener('click', shareCakeRecipe);
+            
+            // Atualiza a mistura desejada quando mudar a padrão
+            defaultMixInput.addEventListener('change', function() {
+                desiredMixInput.value = this.value;
+            });
         }
 
         function filterBreadRecipes() {
@@ -1368,9 +1374,6 @@
                 }
             });
         }
-
-        // Adiciona um ingrediente inicial para o modo bolo
-        addIngredient();
     </script>
 </body>
 </html>
