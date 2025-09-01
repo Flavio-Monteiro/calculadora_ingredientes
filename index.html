@@ -3,53 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora Premium de Receitas</title>
+    <title>PãoMaster - Calculadora de Receitas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         :root {
-            /* Cores claras (modo padrão) */
-            --primary-color: #2c5e8c;
-            --secondary-color: #f5e6ca;
-            --accent-color: #e67e22;
-            --highlight-color: #e74c3c;
-            --success-color: #27ae60;
-            --text-color: #333333;
-            --light-gray: #f5f5f5;
-            --medium-gray: #dddddd;
-            --dark-gray: #555555;
-            --white: #ffffff;
-            --black: #000000;
-            
-            /* Cores específicas para cada modo */
-            --bread-color: #2c5e8c;
-            --cake-color: #8e44ad;
-            
-            /* Variáveis de layout */
-            --border-radius: 8px;
-            --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            --primary: #2c5e8c;
+            --primary-light: #3a7ab3;
+            --secondary: #f5e6ca;
+            --accent: #e67e22;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --gray: #6c757d;
+            --border-radius: 12px;
+            --shadow: 0 4px 12px rgba(0,0,0,0.1);
             --transition: all 0.3s ease;
-        }
-
-        /* Modo escuro - se preferido pelo sistema */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --primary-color: #3498db;
-                --secondary-color: #2c3e50;
-                --accent-color: #e67e22;
-                --highlight-color: #e74c3c;
-                --text-color: #ecf0f1;
-                --light-gray: #121212;
-                --medium-gray: #2c3e50;
-                --dark-gray: #bdc3c7;
-                --white: #1e1e1e;
-                --black: #ecf0f1;
-                
-                --bread-color: #3498db;
-                --cake-color: #9b59b6;
-            }
-            
-            body {
-                background-color: #121212;
-            }
         }
 
         * {
@@ -60,80 +29,76 @@
 
         body {
             font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
             line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--light-gray);
-            padding: 15px;
-            font-size: 16px;
-            -webkit-text-size-adjust: 100%;
+            padding-bottom: 80px;
         }
 
-        .container {
-            width: 100%;
-            max-width: 1000px;
+        .app-container {
+            max-width: 100%;
             margin: 0 auto;
-            background-color: var(--white);
+            padding: 15px;
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
             padding: 20px;
             border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-        }
-
-        h1 {
+            margin-bottom: 20px;
             text-align: center;
-            color: var(--primary-color);
-            margin-bottom: 25px;
-            font-size: 1.8rem;
+            box-shadow: var(--shadow);
         }
 
-        /* Sistema de modos */
-        .mode-selector {
+        .app-header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
             display: flex;
-            margin-bottom: 25px;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .app-header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            background: white;
             border-radius: var(--border-radius);
             overflow: hidden;
-            box-shadow: var(--box-shadow);
-            border: 1px solid var(--medium-gray);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
         }
 
-        .mode-btn {
+        .nav-tab {
             flex: 1;
-            padding: 15px;
             text-align: center;
+            padding: 15px;
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
-            border: none;
-            background-color: var(--light-gray);
-            color: var(--text-color);
+            border-bottom: 3px solid transparent;
         }
 
-        .mode-btn.active {
-            background-color: var(--white);
-            color: var(--primary-color);
+        .nav-tab.active {
+            border-bottom: 3px solid var(--primary);
+            color: var(--primary);
         }
 
-        .mode-btn[data-mode="bread"] {
-            border-right: 1px solid var(--medium-gray);
+        /* Cards and Forms */
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
         }
 
-        .mode-btn[data-mode="bread"].active {
-            color: var(--bread-color);
-        }
-
-        .mode-btn[data-mode="cake"].active {
-            color: var(--cake-color);
-        }
-
-        /* Painéis de conteúdo */
-        .mode-panel {
-            display: none;
-        }
-
-        .mode-panel.active {
-            display: block;
-        }
-
-        /* Controles comuns */
         .form-group {
             margin-bottom: 20px;
         }
@@ -142,92 +107,58 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 500;
-            color: var(--primary-color);
+            color: var(--primary);
         }
 
-        input, select {
+        select, input {
             width: 100%;
-            padding: 12px;
-            border: 2px solid var(--primary-color);
+            padding: 15px;
+            border: 2px solid #e9ecef;
             border-radius: var(--border-radius);
             font-size: 1rem;
-            background-color: var(--white);
-            color: var(--text-color);
             transition: var(--transition);
         }
 
-        input:focus, select:focus {
+        select:focus, input:focus {
             outline: none;
-            border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.2);
+            border-color: var(--primary);
         }
 
-        /* Barra de carregamento */
-        .loading-bar {
-            height: 3px;
-            width: 0;
-            background: linear-gradient(to right, var(--highlight-color), var(--accent-color));
-            transition: width 0.3s;
-            margin-bottom: 15px;
-            border-radius: 3px;
-        }
-
-        /* Mensagens toast */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: var(--primary-color);
-            color: var(--white);
-            padding: 12px 20px;
-            border-radius: var(--border-radius);
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.3s;
-            max-width: 90%;
-            text-align: center;
-            box-shadow: var(--box-shadow);
-        }
-
-        /* Botões */
+        /* Buttons */
         .btn {
-            padding: 12px 20px;
-            border: none;
-            border-radius: var(--border-radius);
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            padding: 15px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
             gap: 8px;
+            width: 100%;
+            font-size: 1rem;
         }
 
         .btn-primary {
-            background-color: var(--primary-color);
-            color: var(--white);
-        }
-
-        .btn-accent {
-            background-color: var(--accent-color);
-            color: var(--white);
+            background: var(--primary);
+            color: white;
         }
 
         .btn-success {
-            background-color: var(--success-color);
-            color: var(--white);
+            background: var(--success);
+            color: white;
         }
 
         .btn-danger {
-            background-color: var(--highlight-color);
-            color: var(--white);
+            background: var(--danger);
+            color: white;
         }
 
         .btn-outline {
-            background-color: transparent;
-            border: 2px solid var(--primary-color);
-            color: var(--primary-color);
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
         }
 
         .btn:hover {
@@ -236,320 +167,285 @@
         }
 
         .btn-sm {
-            padding: 8px 12px;
+            padding: 10px 15px;
             font-size: 0.9rem;
+            width: auto;
         }
 
-        .btn-icon {
-            padding: 10px;
-            min-width: 40px;
-        }
-
-        /* Grupos de botões */
         .button-group {
             display: flex;
-            flex-wrap: wrap;
             gap: 10px;
             margin-top: 20px;
         }
 
-        /* Lista de ingredientes (modo bolo) */
-        .ingredients-list {
-            margin-top: 15px;
-        }
-
-        .ingredient-item {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-            align-items: center;
-            padding: 12px;
-            background-color: var(--secondary-color);
-            border-radius: var(--border-radius);
-            transition: var(--transition);
-        }
-
-        .ingredient-item:hover {
-            background-color: var(--light-gray);
-        }
-
-        .ingredient-item input {
-            flex: 1;
-            margin-bottom: 0;
-        }
-
-        /* Tabelas */
-        .table-container {
-            overflow-x: auto;
-            margin: 20px 0;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 600px;
-        }
-
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid var(--medium-gray);
-        }
-
-        th {
-            background-color: var(--primary-color);
-            color: var(--white);
-            position: sticky;
-            top: 0;
-        }
-
-        tr:nth-child(even) {
-            background-color: var(--secondary-color);
-        }
-
-        tr:hover {
-            background-color: var(--light-gray);
-        }
-
-        /* Favoritos */
-        .favorite-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--medium-gray);
-            transition: var(--transition);
-            padding: 5px;
-        }
-
-        .favorite-btn.active {
-            color: var(--accent-color);
-        }
-
-        /* Tooltip */
-        .tooltip {
-            position: relative;
-            display: inline-block;
-            cursor: help;
-            border-bottom: 1px dotted var(--dark-gray);
-        }
-
-        .tooltip .tooltip-text {
-            visibility: hidden;
-            width: 200px;
-            background-color: var(--black);
-            color: var(--white);
-            text-align: center;
-            border-radius: var(--border-radius);
-            padding: 8px;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%;
-            left: 50%;
-            transform: translateX(-50%);
-            opacity: 0;
-            transition: opacity 0.3s;
-            font-size: 0.9rem;
-            font-weight: normal;
-        }
-
-        .tooltip:hover .tooltip-text {
-            visibility: visible;
-            opacity: 1;
-        }
-
-        /* Highlight animation */
-        .highlight {
-            animation: highlight 1s ease;
-        }
-
-        @keyframes highlight {
-            0% { background-color: var(--highlight-color); }
-            100% { background-color: inherit; }
-        }
-
-        /* Filtros e controles */
-        .filter-bar {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-
-        .search-container {
-            flex: 1;
-            min-width: 200px;
-        }
-
-        /* Multiplicadores rápidos */
+        /* Quick multipliers */
         .quick-multipliers {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             margin-top: 10px;
         }
 
         .quick-multipliers button {
             flex: 1;
-            padding: 8px;
-            border: none;
-            border-radius: 5px;
-            background-color: var(--secondary-color);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
             cursor: pointer;
             transition: var(--transition);
         }
 
         .quick-multipliers button:hover {
-            background-color: var(--accent-color);
-            color: var(--white);
+            background: var(--primary);
+            color: white;
         }
 
-        /* Configurações padrão */
-        .default-settings {
-            background-color: var(--secondary-color);
-            padding: 15px;
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal {
+            background: white;
             border-radius: var(--border-radius);
-            margin-bottom: 20px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow);
+            transform: translateY(20px);
+            transition: var(--transition);
         }
 
-        .default-settings h3 {
-            margin-bottom: 10px;
-            color: var(--primary-color);
+        .modal-overlay.active .modal {
+            transform: translateY(0);
         }
 
-        /* Responsividade */
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-            .container {
-                padding: 15px;
-            }
+        .modal-header h2 {
+            font-size: 1.3rem;
+            color: var(--primary);
+        }
 
-            h1 {
-                font-size: 1.5rem;
-            }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
 
-            .mode-btn {
-                padding: 12px;
-                font-size: 14px;
-            }
+        .modal-body {
+            padding: 20px;
+        }
 
-            .ingredient-item {
-                flex-direction: column;
-            }
+        /* Tables */
+        .table-responsive {
+            overflow-x: auto;
+        }
 
-            .ingredient-item input, 
-            .ingredient-item select {
-                width: 100%;
-            }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--dark);
+            color: white;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            z-index: 1000;
+            opacity: 0;
+            transition: var(--transition);
+            max-width: 90%;
+            text-align: center;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        /* Recipe list */
+        .recipe-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .recipe-item {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .recipe-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Edit form */
+        .ingredient-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .ingredient-form input {
+            flex: 1;
+        }
+
+        .ingredient-list {
+            margin-top: 20px;
+        }
+
+        .ingredient-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        /* Bottom navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .bottom-nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            color: var(--gray);
+            transition: var(--transition);
+        }
+
+        .bottom-nav-item.active {
+            color: var(--primary);
+        }
+
+        .bottom-nav-item i {
+            font-size: 1.2rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .bottom-nav-item span {
+            font-size: 0.7rem;
+        }
+
+        /* Utility classes */
+        .hidden {
+            display: none;
+        }
+
+        .mt-20 {
+            margin-top: 20px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .app-header h1 {
+                font-size: 1.3rem;
+            }
+            
             .button-group {
                 flex-direction: column;
             }
-
-            .btn {
+            
+            .btn-sm {
                 width: 100%;
-            }
-
-            th, td {
-                padding: 10px 12px;
-                font-size: 14px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            body {
-                font-size: 15px;
-            }
-
-            .filter-bar {
-                flex-direction: column;
-                gap: 8px;
-            }
-
-            .quick-multipliers {
-                flex-wrap: wrap;
-            }
-
-            .quick-multipliers button {
-                min-width: calc(33% - 8px);
-            }
-        }
-
-        /* Estilos para impressão */
-        @media print {
-            body * {
-                visibility: hidden;
-            }
-            
-            .print-section, .print-section * {
-                visibility: visible;
-            }
-            
-            .print-section {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-            }
-            
-            button, .mode-selector, .filter-bar {
-                display: none !important;
-            }
-            
-            table {
-                min-width: 100%;
-            }
-            
-            th {
-                background-color: var(--primary-color) !important;
-                color: var(--white) !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
             }
         }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1><i class="fas fa-calculator"></i> Calculadora Premium de Receitas</h1>
-        
-        <!-- Seletor de modo -->
-        <div class="mode-selector">
-            <button class="mode-btn active" data-mode="bread">
-                <i class="fas fa-bread-slice"></i> Massas de Panificação
-            </button>
-            <button class="mode-btn" data-mode="cake">
-                <i class="fas fa-birthday-cake"></i> Bolos Personalizados
-            </button>
+    <div class="app-container">
+        <header class="app-header">
+            <h1><i class="fas fa-bread-slice"></i> PãoMaster</h1>
+            <p>Calculadora profissional de receitas de pães</p>
+        </header>
+
+        <div class="nav-tabs">
+            <div class="nav-tab active" data-tab="calculator">
+                <i class="fas fa-calculator"></i> Calculadora
+            </div>
+            <div class="nav-tab" data-tab="recipes">
+                <i class="fas fa-book"></i> Receitas
+            </div>
         </div>
-        
-        <!-- Modo Massas de Panificação -->
-        <div id="bread-panel" class="mode-panel active">
-            <div class="filter-bar">
-                <div class="search-container">
-                    <input type="text" id="bread-search" placeholder="Buscar receita...">
+
+        <!-- Calculadora Section -->
+        <div id="calculator-section">
+            <div class="card">
+                <div class="form-group">
+                    <label for="recipe-select">Selecione uma receita:</label>
+                    <select id="recipe-select">
+                        <option value="">-- Selecione --</option>
+                    </select>
                 </div>
-                <button id="toggle-favorites-bread" class="btn btn-outline btn-sm">
-                    <i class="fas fa-star"></i> Favoritos
-                </button>
-            </div>
-            
-            <div class="form-group">
-                <label for="recipe-select">Selecione uma receita:</label>
-                <select id="recipe-select">
-                    <option value="">-- Selecione --</option>
-                    <!-- Opções serão preenchidas via JavaScript -->
-                </select>
-            </div>
-            
-            <div id="bread-recipe-container" style="display: none;">
+
                 <div class="form-group">
                     <label for="flour-input">Quantidade de farinha desejada (kg):</label>
-                    <input type="number" id="flour-input" min="0.1" step="0.1" placeholder="Digite a quantidade em kg">
+                    <input type="number" id="flour-input" min="0.1" step="0.1" placeholder="Ex: 5.0">
                     
                     <div class="quick-multipliers">
                         <button data-mult="0.5">½x</button>
@@ -557,135 +453,166 @@
                         <button data-mult="5">5x</button>
                     </div>
                 </div>
-                
-                <div class="loading-bar" id="bread-loading-bar"></div>
-                
-                <div class="print-section">
-                    <h2 id="recipe-title"></h2>
-                    <div class="table-container">
-                        <table id="ingredients-table">
+
+                <button id="calculate-btn" class="btn btn-primary">
+                    <i class="fas fa-calculator"></i> Gerar Nova Receita
+                </button>
+            </div>
+        </div>
+
+        <!-- Recipes Management Section -->
+        <div id="recipes-section" class="hidden">
+            <div class="card">
+                <h2>Receitas Originais</h2>
+                <div class="recipe-list" id="original-recipes-list">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Receitas Personalizadas</h2>
+                <div class="recipe-list" id="custom-recipes-list">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Recipe Result Modal -->
+        <div class="modal-overlay" id="result-modal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2 id="modal-recipe-title">Receita Calculada</h2>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Ingrediente</th>
+                                    <th>Quantidade</th>
+                                </tr>
+                            </thead>
+                            <tbody id="modal-ingredients-body">
+                                <!-- Will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="button-group mt-20">
+                        <button id="print-btn" class="btn btn-outline btn-sm">
+                            <i class="fas fa-print"></i> Imprimir
+                        </button>
+                        <button id="share-btn" class="btn btn-outline btn-sm">
+                            <i class="fas fa-share-alt"></i> Compartilhar
+                        </button>
+                        <button id="save-custom-btn" class="btn btn-success btn-sm">
+                            <i class="fas fa-save"></i> Salvar Receita
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- View Recipe Modal -->
+        <div class="modal-overlay" id="view-modal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2 id="view-modal-title">Detalhes da Receita</h2>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table>
                             <thead>
                                 <tr>
                                     <th>Ingrediente</th>
                                     <th>Quantidade Original</th>
-                                    <th>Quantidade Ajustada <span class="tooltip">(?)
-                                        <span class="tooltip-text">Clique para converter unidades</span>
-                                    </span></th>
+                                    <th>Unidade</th>
                                 </tr>
                             </thead>
-                            <tbody id="ingredients-body"></tbody>
+                            <tbody id="view-ingredients-body">
+                                <!-- Will be populated by JavaScript -->
+                            </tbody>
                         </table>
                     </div>
-                </div>
-                
-                <div class="button-group">
-                    <button id="calculate-bread" class="btn btn-primary">
-                        <i class="fas fa-calculator"></i> Calcular
-                    </button>
-                    <button id="reset-bread" class="btn btn-danger">
-                        <i class="fas fa-undo"></i> Resetar
-                    </button>
-                    <button id="save-bread" class="btn btn-success">
-                        <i class="fas fa-save"></i> Salvar
-                    </button>
-                    <button id="print-bread" class="btn btn-accent">
-                        <i class="fas fa-print"></i> Imprimir
-                    </button>
-                    <button id="share-bread" class="btn btn-outline">
-                        <i class="fas fa-share-alt"></i> Compartilhar
-                    </button>
+
+                    <div class="button-group mt-20">
+                        <button id="edit-recipe-btn" class="btn btn-primary btn-sm">
+                            <i class="fas fa-edit"></i> Editar Receita
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Modo Bolos Personalizados -->
-        <div id="cake-panel" class="mode-panel">
-            <!-- Configurações padrão para bolos -->
-            <div class="default-settings">
-                <h3><i class="fas fa-cog"></i> Configurações Padrão</h3>
-                <div class="form-group">
-                    <label for="default-mix">Quantidade padrão da mistura pronta (kg):</label>
-                    <input type="number" id="default-mix" min="0.1" step="0.1" value="5">
+
+        <!-- Edit Recipe Modal -->
+        <div class="modal-overlay" id="edit-modal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2 id="edit-modal-title">Editar Receita</h2>
+                    <button class="modal-close">&times;</button>
                 </div>
-                <div class="form-group">
-                    <label for="default-milk">Quantidade padrão de leite (litros):</label>
-                    <input type="number" id="default-milk" min="0.1" step="0.1" value="2.5">
-                </div>
-                <div class="form-group">
-                    <label for="default-eggs">Quantidade padrão de ovos (unidades):</label>
-                    <input type="number" id="default-eggs" min="1" step="1" value="35">
-                </div>
-                <div class="form-group">
-                    <label>Ingredientes opcionais:</label>
-                    <div class="optional-ingredients">
-                        <label><input type="checkbox" id="use-ferment"> Usar fermento</label>
-                        <label><input type="checkbox" id="use-water"> Usar água</label>
-                        <label><input type="checkbox" id="use-extra-milk"> Usar leite extra</label>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="edit-recipe-name">Nome da Receita:</label>
+                        <input type="text" id="edit-recipe-name" placeholder="Nome da receita">
                     </div>
-                </div>
-                <button id="save-defaults" class="btn btn-success">
-                    <i class="fas fa-save"></i> Salvar Configurações
-                </button>
-            </div>
-            
-            <div class="form-group">
-                <label for="recipe-name">Nome da Receita:</label>
-                <input type="text" id="recipe-name" placeholder="Ex: Bolo de Chocolate">
-            </div>
-            
-            <div class="form-group">
-                <label for="desired-mix">Quantidade desejada de mistura pronta (kg):</label>
-                <input type="number" id="desired-mix" min="0.1" step="0.1" placeholder="Digite a quantidade em kg">
-                
-                <div class="quick-multipliers">
-                    <button data-mult="0.5">½x</button>
-                    <button data-mult="1">1x</button>
-                    <button data-mult="2">2x</button>
-                </div>
-            </div>
-            
-            <div class="loading-bar" id="cake-loading-bar"></div>
-            
-            <div class="button-group">
-                <button id="calculate-cake" class="btn btn-primary">
-                    <i class="fas fa-calculator"></i> Calcular
-                </button>
-                <button id="reset-cake" class="btn btn-danger">
-                    <i class="fas fa-undo"></i> Resetar
-                </button>
-            </div>
-            
-            <div id="cake-results" style="display: none;">
-                <h2 id="cake-recipe-title"></h2>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Ingrediente</th>
-                                <th>Quantidade Padrão</th>
-                                <th>Quantidade Ajustada</th>
-                            </tr>
-                        </thead>
-                        <tbody id="cake-results-body"></tbody>
-                    </table>
-                </div>
-                
-                <div class="button-group">
-                    <button id="print-cake" class="btn btn-accent">
-                        <i class="fas fa-print"></i> Imprimir
-                    </button>
-                    <button id="share-cake" class="btn btn-outline">
-                        <i class="fas fa-share-alt"></i> Compartilhar
-                    </button>
+
+                    <h3>Ingredientes</h3>
+                    
+                    <div class="ingredient-form">
+                        <input type="text" id="ingredient-name" placeholder="Nome do ingrediente">
+                        <input type="number" id="ingredient-amount" placeholder="Quantidade" step="0.001">
+                        <select id="ingredient-unit">
+                            <option value="kg">kg</option>
+                            <option value="g">g</option>
+                            <option value="un">un</option>
+                            <option value="litros">litros</option>
+                        </select>
+                        <button id="add-ingredient" class="btn btn-sm">+</button>
+                    </div>
+
+                    <div class="ingredient-list" id="edit-ingredients-list">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+
+                    <div class="form-group">
+                        <label for="base-ingredient">Ingrediente base para cálculo:</label>
+                        <select id="base-ingredient">
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                    </div>
+
+                    <div class="button-group mt-20">
+                        <button id="save-recipe-btn" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Salvar Alterações
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    
+
+    <div class="bottom-nav">
+        <div class="bottom-nav-item active" data-tab="calculator">
+            <i class="fas fa-calculator"></i>
+            <span>Calcular</span>
+        </div>
+        <div class="bottom-nav-item" data-tab="recipes">
+            <i class="fas fa-book"></i>
+            <span>Receitas</span>
+        </div>
+        <div class="bottom-nav-item" id="saved-recipes-btn">
+            <i class="fas fa-star"></i>
+            <span>Salvas</span>
+        </div>
+    </div>
+
     <div class="toast" id="toast"></div>
 
     <script>
-        // Dados das receitas de panificação
+        // Dados das receitas
         const breadRecipes = {
             pao_frances: {
                 id: "pao_frances",
@@ -693,7 +620,7 @@
                 favorite: false,
                 ingredients: [
                     { name: "Farinha de trigo", originalAmount: 25, unit: "kg" },
-                    { name: "Melhorador", originalAmount: 250, unit: "g", tooltip: "Substância que melhora a textura da massa" },
+                    { name: "Melhorador", originalAmount: 250, unit: "g" },
                     { name: "Fermento", originalAmount: 150, unit: "g" },
                     { name: "Sal", originalAmount: 500, unit: "g" },
                     { name: "Açúcar", originalAmount: 250, unit: "g" },
@@ -726,7 +653,7 @@
                     { name: "Farinha de trigo integral", originalAmount: 5, unit: "kg" },
                     { name: "Sal", originalAmount: 50, unit: "g" },
                     { name: "Melhorador", originalAmount: 10, unit: "g" },
-                    { name: "Esponja de francês", originalAmount: 2, unit: "kg", tooltip: "Massa pré-fermentada" }
+                    { name: "Esponja de francês", originalAmount: 2, unit: "kg" }
                 ],
                 baseIngredient: "Farinha de trigo"
             },
@@ -775,603 +702,610 @@
             }
         };
 
-        // Variáveis de estado
-        let currentBreadRecipe = null;
-        let currentCakeRecipe = {
-            name: "",
-            ingredients: []
-        };
-        let favorites = JSON.parse(localStorage.getItem('recipeFavorites')) || {};
-        let showOnlyFavorites = false;
-        let defaultCakeSettings = {
-            mixAmount: 5,
-            milkAmount: 2.5,
-            eggsAmount: 6,
-            useFerment: false,
-            useWater: false,
-            useExtraMilk: false
-        };
+        // Estado da aplicação
+        let currentRecipe = null;
+        let customRecipes = JSON.parse(localStorage.getItem('customRecipes')) || {};
+        let currentCalculatedRecipe = null;
+        let currentViewRecipe = null;
 
         // Elementos DOM
         const recipeSelect = document.getElementById('recipe-select');
-        const breadRecipeContainer = document.getElementById('bread-recipe-container');
-        const recipeTitle = document.getElementById('recipe-title');
-        const ingredientsBody = document.getElementById('ingredients-body');
         const flourInput = document.getElementById('flour-input');
-        const calculateBreadBtn = document.getElementById('calculate-bread');
-        const resetBreadBtn = document.getElementById('reset-bread');
-        const saveBreadBtn = document.getElementById('save-bread');
-        const printBreadBtn = document.getElementById('print-bread');
-        const shareBreadBtn = document.getElementById('share-bread');
-        const toggleFavoritesBtn = document.getElementById('toggle-favorites-bread');
-        const breadSearchInput = document.getElementById('bread-search');
-        const breadLoadingBar = document.getElementById('bread-loading-bar');
-
-        // Elementos do modo bolo
-        const defaultMixInput = document.getElementById('default-mix');
-        const defaultMilkInput = document.getElementById('default-milk');
-        const defaultEggsInput = document.getElementById('default-eggs');
-        const useFermentCheckbox = document.getElementById('use-ferment');
-        const useWaterCheckbox = document.getElementById('use-water');
-        const useExtraMilkCheckbox = document.getElementById('use-extra-milk');
-        const saveDefaultsBtn = document.getElementById('save-defaults');
-        const cakeRecipeNameInput = document.getElementById('recipe-name');
-        const desiredMixInput = document.getElementById('desired-mix');
-        const calculateCakeBtn = document.getElementById('calculate-cake');
-        const cakeResults = document.getElementById('cake-results');
-        const cakeResultsBody = document.getElementById('cake-results-body');
-        const resetCakeBtn = document.getElementById('reset-cake');
-        const printCakeBtn = document.getElementById('print-cake');
-        const shareCakeBtn = document.getElementById('share-cake');
-        const cakeLoadingBar = document.getElementById('cake-loading-bar');
-
-        // Toast
+        const calculateBtn = document.getElementById('calculate-btn');
+        const resultModal = document.getElementById('result-modal');
+        const modalRecipeTitle = document.getElementById('modal-recipe-title');
+        const modalIngredientsBody = document.getElementById('modal-ingredients-body');
+        const printBtn = document.getElementById('print-btn');
+        const shareBtn = document.getElementById('share-btn');
+        const saveCustomBtn = document.getElementById('save-custom-btn');
+        const closeModalBtns = document.querySelectorAll('.modal-close');
         const toast = document.getElementById('toast');
+        const originalRecipesList = document.getElementById('original-recipes-list');
+        const customRecipesList = document.getElementById('custom-recipes-list');
+        const navTabs = document.querySelectorAll('.nav-tab');
+        const bottomNavItems = document.querySelectorAll('.bottom-nav-item');
+        const calculatorSection = document.getElementById('calculator-section');
+        const recipesSection = document.getElementById('recipes-section');
+        const editModal = document.getElementById('edit-modal');
+        const editRecipeName = document.getElementById('edit-recipe-name');
+        const editIngredientsList = document.getElementById('edit-ingredients-list');
+        const baseIngredientSelect = document.getElementById('base-ingredient');
+        const saveRecipeBtn = document.getElementById('save-recipe-btn');
+        const ingredientNameInput = document.getElementById('ingredient-name');
+        const ingredientAmountInput = document.getElementById('ingredient-amount');
+        const ingredientUnitSelect = document.getElementById('ingredient-unit');
+        const addIngredientBtn = document.getElementById('add-ingredient');
+        const editModalTitle = document.getElementById('edit-modal-title');
+        const viewModal = document.getElementById('view-modal');
+        const viewModalTitle = document.getElementById('view-modal-title');
+        const viewIngredientsBody = document.getElementById('view-ingredients-body');
+        const editRecipeBtn = document.getElementById('edit-recipe-btn');
 
         // Inicialização
         document.addEventListener('DOMContentLoaded', function() {
-            initBreadMode();
-            initCakeMode();
-            loadFavorites();
+            initApp();
             setupEventListeners();
         });
 
-        // ========== FUNÇÕES GERAIS ==========
-
-        function showToast(message, type = 'info') {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            
-            // Reset classes
-            toast.className = 'toast';
-            
-            // Add type class
-            if (type === 'success') {
-                toast.style.backgroundColor = 'var(--success-color)';
-            } else if (type === 'error') {
-                toast.style.backgroundColor = 'var(--highlight-color)';
-            } else {
-                toast.style.backgroundColor = 'var(--primary-color)';
-            }
-            
-            toast.style.opacity = '1';
-            
-            setTimeout(() => {
-                toast.style.opacity = '0';
-            }, 3000);
-        }
-
-        function showLoading(loadingBar) {
-            loadingBar.style.width = '100%';
-        }
-
-        function hideLoading(loadingBar) {
-            setTimeout(() => {
-                loadingBar.style.width = '0';
-            }, 300);
-        }
-
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                showToast('Copiado para a área de transferência!', 'success');
-            }).catch(err => {
-                showToast('Falha ao copiar: ' + err, 'error');
-            });
-        }
-
-        function toggleUnit(element) {
-            const text = element.textContent.split(' ');
-            const value = parseFloat(text[0]);
-            const unit = text[1];
-            
-            if (unit === 'kg') {
-                element.textContent = `${(value * 1000).toFixed(0)} g`;
-            } else if (unit === 'g' && value >= 1000) {
-                element.textContent = `${(value / 1000).toFixed(3)} kg`;
-            } else if (unit === 'litros' || unit === 'litro') {
-                element.textContent = `${(value * 1000).toFixed(0)} ml`;
-            } else if (unit === 'ml' && value >= 1000) {
-                element.textContent = `${(value / 1000).toFixed(2)} litros`;
-            }
-            
-            // Restaura o valor original após 5 segundos
-            setTimeout(() => {
-                if (element.dataset.originalText) {
-                    element.textContent = element.dataset.originalText;
-                }
-            }, 5000);
-        }
-
-        // ========== MODO PANIFICAÇÃO ==========
-
-        function initBreadMode() {
-            // Preenche o dropdown de receitas
+        // Funções principais
+        function initApp() {
             populateRecipeSelect();
-            
-            // Carrega a última receita usada
-            const lastRecipe = JSON.parse(localStorage.getItem('lastBreadRecipe'));
-            if (lastRecipe && breadRecipes[lastRecipe.recipeId]) {
-                recipeSelect.value = lastRecipe.recipeId;
-                loadBreadRecipe();
-                flourInput.value = lastRecipe.flourAmount;
-                calculateBreadRecipe();
-            }
+            loadRecipes();
         }
 
         function populateRecipeSelect() {
             recipeSelect.innerHTML = '<option value="">-- Selecione --</option>';
             
+            // Adiciona receitas originais
             Object.values(breadRecipes).forEach(recipe => {
                 const option = document.createElement('option');
                 option.value = recipe.id;
                 option.textContent = recipe.name;
-                
-                // Marca receitas favoritas
-                if (favorites[recipe.id]) {
-                    option.textContent += ' ★';
-                }
-                
+                recipeSelect.appendChild(option);
+            });
+            
+            // Adiciona receitas personalizadas
+            Object.values(customRecipes).forEach(recipe => {
+                const option = document.createElement('option');
+                option.value = recipe.id;
+                option.textContent = `${recipe.name} (Personalizada)`;
                 recipeSelect.appendChild(option);
             });
         }
 
-        function loadBreadRecipe() {
-            const recipeId = recipeSelect.value;
-            
-            if (recipeId && breadRecipes[recipeId]) {
-                currentBreadRecipe = breadRecipes[recipeId];
-                recipeTitle.textContent = currentBreadRecipe.name;
-                displayBreadIngredients(currentBreadRecipe);
-                breadRecipeContainer.style.display = 'block';
-                
-                // Define o valor padrão do input
-                const baseIng = currentBreadRecipe.ingredients.find(
-                    ing => ing.name === currentBreadRecipe.baseIngredient
-                );
-                if (baseIng) flourInput.value = baseIng.originalAmount;
-                
-                calculateBreadRecipe();
-                showToast(`Receita "${currentBreadRecipe.name}" carregada`, 'success');
-            } else {
-                breadRecipeContainer.style.display = 'none';
-                currentBreadRecipe = null;
-            }
-        }
-
-        function displayBreadIngredients(recipe) {
-            ingredientsBody.innerHTML = '';
-            
-            recipe.ingredients.forEach(ingredient => {
-                const row = document.createElement('tr');
-                
-                // Célula do nome com tooltip se existir
-                const nameCell = document.createElement('td');
-                if (ingredient.tooltip) {
-                    const tooltipSpan = document.createElement('span');
-                    tooltipSpan.className = 'tooltip';
-                    tooltipSpan.innerHTML = `${ingredient.name} <span class="tooltip-text">${ingredient.tooltip}</span>`;
-                    nameCell.appendChild(tooltipSpan);
-                } else {
-                    nameCell.textContent = ingredient.name;
-                }
-                
-                // Célula do valor original
-                const originalCell = document.createElement('td');
-                originalCell.textContent = `${ingredient.originalAmount} ${ingredient.unit}`;
-                
-                // Célula do valor ajustado (clicável para converter)
-                const adjustedCell = document.createElement('td');
-                adjustedCell.className = 'adjusted-value';
-                adjustedCell.textContent = `${ingredient.originalAmount} ${ingredient.unit}`;
-                adjustedCell.addEventListener('click', () => toggleUnit(adjustedCell));
-                
-                row.append(nameCell, originalCell, adjustedCell);
-                ingredientsBody.appendChild(row);
+        function loadRecipes() {
+            // Carrega receitas originais
+            originalRecipesList.innerHTML = '';
+            Object.values(breadRecipes).forEach(recipe => {
+                const recipeItem = createRecipeItem(recipe, false);
+                originalRecipesList.appendChild(recipeItem);
             });
-        }
-
-        function calculateBreadRecipe() {
-            if (!currentBreadRecipe || !flourInput.value) return;
             
-            showLoading(breadLoadingBar);
-            
-            setTimeout(() => {
-                const desiredAmount = parseFloat(flourInput.value);
-                if (isNaN(desiredAmount) || desiredAmount <= 0) {
-                    showToast('Digite uma quantidade válida de farinha', 'error');
-                    hideLoading(breadLoadingBar);
-                    return;
-                }
-                
-                const baseIng = currentBreadRecipe.ingredients.find(
-                    ing => ing.name === currentBreadRecipe.baseIngredient
-                );
-                if (!baseIng) {
-                    hideLoading(breadLoadingBar);
-                    return;
-                }
-                
-                const ratio = desiredAmount / baseIng.originalAmount;
-                const rows = ingredientsBody.querySelectorAll('tr');
-                
-                currentBreadRecipe.ingredients.forEach((ingredient, index) => {
-                    const adjustedAmount = ingredient.originalAmount * ratio;
-                    const adjustedCell = rows[index].querySelector('.adjusted-value');
-                    
-                    // Formata a exibição baseado na unidade
-                    let displayAmount, displayUnit = ingredient.unit;
-                    
-                    if (ingredient.unit === 'g' && adjustedAmount >= 1000) {
-                        displayAmount = (adjustedAmount / 1000).toFixed(3);
-                        displayUnit = 'kg';
-                    } else if (ingredient.unit === 'kg' && adjustedAmount < 1) {
-                        displayAmount = (adjustedAmount * 1000).toFixed(0);
-                        displayUnit = 'g';
-                    } else if (ingredient.unit === 'un') {
-                        displayAmount = Math.round(adjustedAmount * 10) / 10;
-                    } else if (ingredient.unit === 'litros' && adjustedAmount < 1) {
-                        displayAmount = (adjustedAmount * 1000).toFixed(0);
-                        displayUnit = 'ml';
-                    } else {
-                        displayAmount = adjustedAmount.toFixed(3).replace(/\.?0+$/, '');
-                    }
-                    
-                    adjustedCell.textContent = `${displayAmount} ${displayUnit}`;
-                    adjustedCell.dataset.originalText = adjustedCell.textContent;
-                    adjustedCell.classList.add('highlight');
-                    
-                    setTimeout(() => {
-                        adjustedCell.classList.remove('highlight');
-                    }, 1000);
+            // Carrega receitas personalizadas
+            customRecipesList.innerHTML = '';
+            if (Object.keys(customRecipes).length === 0) {
+                customRecipesList.innerHTML = '<p class="text-center">Nenhuma receita personalizada salva</p>';
+            } else {
+                Object.values(customRecipes).forEach(recipe => {
+                    const recipeItem = createRecipeItem(recipe, true);
+                    customRecipesList.appendChild(recipeItem);
                 });
-                
-                hideLoading(breadLoadingBar);
-                showToast('Receita calculada com sucesso!', 'success');
-            }, 300);
+            }
         }
 
-        function saveBreadRecipe() {
-            if (!currentBreadRecipe) {
-                showToast('Nenhuma receita selecionada', 'error');
+        function createRecipeItem(recipe, isCustom) {
+            const item = document.createElement('div');
+            item.className = 'recipe-item';
+            
+            item.innerHTML = `
+                <div>
+                    <h3>${recipe.name}</h3>
+                    <small>${recipe.ingredients.length} ingredientes</small>
+                </div>
+                <div class="recipe-actions">
+                    <button class="btn btn-sm btn-outline view-recipe" data-id="${recipe.id}" data-custom="${isCustom}">
+                        <i class="fas fa-eye"></i> Ver
+                    </button>
+                    ${isCustom ? `
+                    <button class="btn btn-sm btn-primary edit-recipe" data-id="${recipe.id}" data-custom="${isCustom}">
+                        <i class="fas fa-edit"></i> Editar
+                    </button>
+                    <button class="btn btn-sm btn-danger delete-recipe" data-id="${recipe.id}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    ` : ''}
+                </div>
+            `;
+            
+            return item;
+        }
+
+        function calculateRecipe() {
+            const recipeId = recipeSelect.value;
+            const desiredAmount = parseFloat(flourInput.value);
+            
+            if (!recipeId) {
+                showToast('Selecione uma receita', 'error');
                 return;
             }
             
-            const recipeData = {
-                recipeId: currentBreadRecipe.id,
-                flourAmount: flourInput.value
-            };
-            
-            localStorage.setItem('lastBreadRecipe', JSON.stringify(recipeData));
-            showToast('Receita salva com sucesso!', 'success');
-        }
-
-        function shareBreadRecipe() {
-            if (!currentBreadRecipe) {
-                showToast('Nenhuma receita selecionada', 'error');
+            if (isNaN(desiredAmount) || desiredAmount <= 0) {
+                showToast('Digite uma quantidade válida', 'error');
                 return;
             }
             
-            const shareData = {
-                recipe: currentBreadRecipe.id,
-                flour: flourInput.value
-            };
-            
-            const shareUrl = `${window.location.origin}${window.location.pathname}?${new URLSearchParams(shareData)}`;
-            
-            if (navigator.share) {
-                navigator.share({
-                    title: `Receita: ${currentBreadRecipe.name}`,
-                    text: `Confira esta receita de ${currentBreadRecipe.name} para ${flourInput.value}kg de farinha`,
-                    url: shareUrl
-                }).catch(() => copyToClipboard(shareUrl));
+            // Encontra a receita (original ou personalizada)
+            let recipe;
+            if (breadRecipes[recipeId]) {
+                recipe = breadRecipes[recipeId];
+            } else if (customRecipes[recipeId]) {
+                recipe = customRecipes[recipeId];
             } else {
-                copyToClipboard(shareUrl);
-            }
-        }
-
-        function toggleBreadFavorites() {
-            showOnlyFavorites = !showOnlyFavorites;
-            
-            if (showOnlyFavorites) {
-                toggleFavoritesBtn.innerHTML = '<i class="fas fa-star"></i> Mostrar Todos';
-                showToast('Mostrando apenas receitas favoritas', 'success');
-            } else {
-                toggleFavoritesBtn.innerHTML = '<i class="fas fa-star"></i> Favoritos';
-                showToast('Mostrando todas as receitas', 'success');
-            }
-            
-            populateRecipeSelect();
-        }
-
-        function loadFavorites() {
-            Object.keys(favorites).forEach(recipeId => {
-                if (breadRecipes[recipeId]) {
-                    breadRecipes[recipeId].favorite = favorites[recipeId];
-                }
-            });
-        }
-
-        // ========== MODO BOLOS ==========
-
-        function initCakeMode() {
-            // Carrega as configurações padrão
-            const savedSettings = JSON.parse(localStorage.getItem('cakeDefaultSettings'));
-            if (savedSettings) {
-                defaultCakeSettings = savedSettings;
-                defaultMixInput.value = savedSettings.mixAmount;
-                defaultMilkInput.value = savedSettings.milkAmount;
-                defaultEggsInput.value = savedSettings.eggsAmount;
-                useFermentCheckbox.checked = savedSettings.useFerment;
-                useWaterCheckbox.checked = savedSettings.useWater;
-                useExtraMilkCheckbox.checked = savedSettings.useExtraMilk;
-            }
-            
-            // Define o valor padrão para a mistura desejada
-            desiredMixInput.value = defaultCakeSettings.mixAmount;
-        }
-
-        function saveDefaultSettings() {
-            defaultCakeSettings = {
-                mixAmount: parseFloat(defaultMixInput.value),
-                milkAmount: parseFloat(defaultMilkInput.value),
-                eggsAmount: parseInt(defaultEggsInput.value),
-                useFerment: useFermentCheckbox.checked,
-                useWater: useWaterCheckbox.checked,
-                useExtraMilk: useExtraMilkCheckbox.checked
-            };
-            
-            localStorage.setItem('cakeDefaultSettings', JSON.stringify(defaultCakeSettings));
-            showToast('Configurações padrão salvas!', 'success');
-        }
-
-        function calculateCakeRecipe() {
-            const recipeName = cakeRecipeNameInput.value || 'Meu Bolo';
-            const desiredMix = parseFloat(desiredMixInput.value);
-            
-            if (isNaN(desiredMix) || desiredMix <= 0) {
-                showToast('Digite uma quantidade válida de mistura pronta', 'error');
+                showToast('Receita não encontrada', 'error');
                 return;
             }
             
-            showLoading(cakeLoadingBar);
+            currentRecipe = recipe;
             
-            setTimeout(() => {
-                const ratio = desiredMix / defaultCakeSettings.mixAmount;
-                
-                // Cria a lista de ingredientes base
-                const ingredients = [
-                    { name: "Mistura pronta", originalAmount: defaultCakeSettings.mixAmount, unit: "kg", adjustedAmount: desiredMix },
-                    { name: "Leite", originalAmount: defaultCakeSettings.milkAmount, unit: "litros", adjustedAmount: defaultCakeSettings.milkAmount * ratio },
-                    { name: "Ovos", originalAmount: defaultCakeSettings.eggsAmount, unit: "un", adjustedAmount: Math.round(defaultCakeSettings.eggsAmount * ratio) }
-                ];
-                
-                // Adiciona ingredientes opcionais se selecionados
-                if (defaultCakeSettings.useFerment) {
-                    // Fermento em pó - aproximadamente 10g por kg de mistura
-                    const fermentAmount = defaultCakeSettings.mixAmount * 10;
-                    ingredients.push({ 
-                        name: "Fermento em pó", 
-                        originalAmount: fermentAmount, 
-                        unit: "g", 
-                        adjustedAmount: fermentAmount * ratio 
-                    });
-                }
-                
-                if (defaultCakeSettings.useWater) {
-                    // Água - aproximadamente 20% do leite
-                    const waterAmount = defaultCakeSettings.milkAmount * 0.2;
-                    ingredients.push({ 
-                        name: "Água", 
-                        originalAmount: waterAmount, 
-                        unit: "litros", 
-                        adjustedAmount: waterAmount * ratio 
-                    });
-                }
-                
-                if (defaultCakeSettings.useExtraMilk) {
-                    // Leite extra - aproximadamente 10% do leite principal
-                    const extraMilkAmount = defaultCakeSettings.milkAmount * 0.1;
-                    ingredients.push({ 
-                        name: "Leite extra", 
-                        originalAmount: extraMilkAmount, 
-                        unit: "litros", 
-                        adjustedAmount: extraMilkAmount * ratio 
-                    });
-                }
-                
-                // Atualiza a receita atual
-                currentCakeRecipe = {
-                    name: recipeName,
-                    ingredients: ingredients
+            // Calcula as quantidades
+            const baseIng = recipe.ingredients.find(ing => ing.name === recipe.baseIngredient);
+            if (!baseIng) {
+                showToast('Ingrediente base não encontrado', 'error');
+                return;
+            }
+            
+            const ratio = desiredAmount / baseIng.originalAmount;
+            const calculatedIngredients = recipe.ingredients.map(ing => {
+                const adjustedAmount = ing.originalAmount * ratio;
+                return {
+                    name: ing.name,
+                    amount: adjustedAmount,
+                    unit: ing.unit
                 };
-                
-                // Exibe os resultados
-                displayCakeResults(currentCakeRecipe);
-                
-                hideLoading(cakeLoadingBar);
-                showToast('Receita calculada com sucesso!', 'success');
-            }, 300);
+            });
+            
+            // Prepara o resultado
+            currentCalculatedRecipe = {
+                name: recipe.name,
+                ingredients: calculatedIngredients,
+                originalRecipeId: recipe.id
+            };
+            
+            // Exibe o modal com os resultados
+            showResultsModal(currentCalculatedRecipe);
         }
 
-        function displayCakeResults(recipe) {
-            cakeResultsBody.innerHTML = '';
+        function showResultsModal(recipe) {
+            modalRecipeTitle.textContent = recipe.name;
+            modalIngredientsBody.innerHTML = '';
             
             recipe.ingredients.forEach(ing => {
                 const row = document.createElement('tr');
                 
-                // Formata a quantidade ajustada
-                let adjustedDisplay = ing.adjustedAmount;
-                let originalDisplay = ing.originalAmount;
-                
-                // Ajusta a formatação para números inteiros
-                if (ing.unit === 'un') {
-                    adjustedDisplay = Math.round(adjustedDisplay);
-                    originalDisplay = Math.round(originalDisplay);
+                // Formata a quantidade
+                let displayAmount;
+                if (ing.unit === 'g' && ing.amount >= 1000) {
+                    displayAmount = (ing.amount / 1000).toFixed(3) + ' kg';
+                } else if (ing.unit === 'kg' && ing.amount < 1) {
+                    displayAmount = (ing.amount * 1000).toFixed(0) + ' g';
+                } else if (ing.unit === 'un') {
+                    displayAmount = Math.round(ing.amount * 10) / 10;
+                } else if (ing.unit === 'litros' && ing.amount < 1) {
+                    displayAmount = (ing.amount * 1000).toFixed(0) + ' ml';
                 } else {
-                    adjustedDisplay = adjustedDisplay.toFixed(2).replace(/\.?0+$/, '');
-                    originalDisplay = originalDisplay.toFixed(2).replace(/\.?0+$/, '');
+                    displayAmount = ing.amount.toFixed(3).replace(/\.?0+$/, '');
                 }
                 
                 row.innerHTML = `
                     <td>${ing.name}</td>
-                    <td>${originalDisplay} ${ing.unit}</td>
-                    <td class="adjusted-value">${adjustedDisplay} ${ing.unit}</td>
+                    <td>${displayAmount} ${ing.unit}</td>
                 `;
                 
-                // Adiciona evento de conversão de unidades
-                const adjustedCell = row.querySelector('.adjusted-value');
-                adjustedCell.addEventListener('click', () => toggleUnit(adjustedCell));
-                adjustedCell.dataset.originalText = adjustedCell.textContent;
-                
-                cakeResultsBody.appendChild(row);
+                modalIngredientsBody.appendChild(row);
             });
             
-            // Atualiza o título da receita
-            document.getElementById('cake-recipe-title').textContent = recipe.name;
-            
-            // Mostra os resultados
-            cakeResults.style.display = 'block';
-            
-            // Efeito de highlight
-            setTimeout(() => {
-                document.querySelectorAll('#cake-results .adjusted-value').forEach(cell => {
-                    cell.classList.add('highlight');
-                    setTimeout(() => cell.classList.remove('highlight'), 1000);
-                });
-            }, 100);
+            resultModal.classList.add('active');
         }
 
-        function shareCakeRecipe() {
-            if (!currentCakeRecipe || currentCakeRecipe.ingredients.length === 0) {
-                showToast('Nenhuma receita para compartilhar', 'error');
+        function showViewModal(recipe) {
+            viewModalTitle.textContent = recipe.name;
+            viewIngredientsBody.innerHTML = '';
+            
+            recipe.ingredients.forEach(ing => {
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${ing.name}</td>
+                    <td>${ing.originalAmount}</td>
+                    <td>${ing.unit}</td>
+                `;
+                
+                viewIngredientsBody.appendChild(row);
+            });
+            
+            viewModal.classList.add('active');
+        }
+
+        function saveCustomRecipe() {
+            if (!currentCalculatedRecipe) return;
+            
+            const recipeId = 'custom_' + Date.now();
+            const customRecipe = {
+                id: recipeId,
+                name: `${currentCalculatedRecipe.name} (Personalizada)`,
+                ingredients: currentCalculatedRecipe.ingredients.map(ing => ({
+                    name: ing.name,
+                    originalAmount: ing.amount,
+                    unit: ing.unit
+                })),
+                baseIngredient: currentRecipe.baseIngredient
+            };
+            
+            // Salva a receita personalizada
+            customRecipes[recipeId] = customRecipe;
+            localStorage.setItem('customRecipes', JSON.stringify(customRecipes));
+            
+            showToast('Receita personalizada salva!', 'success');
+            loadRecipes();
+            populateRecipeSelect();
+            
+            // Fecha o modal
+            resultModal.classList.remove('active');
+        }
+
+        function printRecipe() {
+            const printContent = `
+                <h1>${currentCalculatedRecipe.name}</h1>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ingrediente</th>
+                            <th>Quantidade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${currentCalculatedRecipe.ingredients.map(ing => `
+                            <tr>
+                                <td>${ing.name}</td>
+                                <td>${ing.amount.toFixed(3)} ${ing.unit}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                <p>Impresso em ${new Date().toLocaleString()}</p>
+            `;
+            
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>${currentCalculatedRecipe.name}</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; padding: 20px; }
+                            table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                            th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+                            th { background-color: #f5f5f5; }
+                        </style>
+                    </head>
+                    <body>
+                        ${printContent}
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        function shareRecipe() {
+            if (!navigator.share) {
+                showToast('Funcionalidade de compartilhamento não suportada', 'error');
                 return;
             }
             
-            const recipeData = {
-                name: currentCakeRecipe.name,
-                ingredients: currentCakeRecipe.ingredients
+            const shareData = {
+                title: currentCalculatedRecipe.name,
+                text: `Confira esta receita de ${currentCalculatedRecipe.name}`,
+                url: window.location.href
             };
             
-            const shareUrl = `${window.location.origin}${window.location.pathname}?mode=cake&data=${encodeURIComponent(JSON.stringify(recipeData))}`;
-            
-            if (navigator.share) {
-                navigator.share({
-                    title: `Receita: ${currentCakeRecipe.name}`,
-                    text: `Confira esta receita de ${currentCakeRecipe.name}`,
-                    url: shareUrl
-                }).catch(() => copyToClipboard(shareUrl));
+            navigator.share(shareData)
+                .then(() => showToast('Receita compartilhada!', 'success'))
+                .catch(error => showToast('Erro ao compartilhar: ' + error, 'error'));
+        }
+
+        function openEditModal(recipeId, isCustom) {
+            let recipe;
+            if (!isCustom) {
+                recipe = breadRecipes[recipeId];
+                editModalTitle.textContent = 'Editar Receita';
             } else {
-                copyToClipboard(shareUrl);
+                recipe = customRecipes[recipeId];
+                editModalTitle.textContent = 'Editar Receita';
             }
+            
+            if (!recipe) return;
+            
+            // Preenche o formulário
+            editRecipeName.value = recipe.name;
+            editIngredientsList.innerHTML = '';
+            
+            // Preenche a lista de ingredientes
+            recipe.ingredients.forEach(ing => {
+                addIngredientToEditList(ing.name, ing.originalAmount, ing.unit);
+            });
+            
+            // Atualiza o select de ingrediente base
+            updateBaseIngredientSelect();
+            
+            // Seleciona o ingrediente base atual
+            baseIngredientSelect.value = recipe.baseIngredient;
+            
+            // Armazena o ID da receita sendo editada
+            editModal.dataset.recipeId = recipeId;
+            editModal.dataset.isCustom = isCustom;
+            
+            // Abre o modal
+            editModal.classList.add('active');
         }
 
-        function resetCakeRecipe() {
-            cakeRecipeNameInput.value = '';
-            desiredMixInput.value = defaultCakeSettings.mixAmount;
-            cakeResults.style.display = 'none';
-            showToast('Receita resetada', 'success');
+        function addIngredientToEditList(name, amount, unit) {
+            const item = document.createElement('div');
+            item.className = 'ingredient-item';
+            item.innerHTML = `
+                <span>${name} - ${amount} ${unit}</span>
+                <button class="btn btn-sm btn-danger remove-ingredient">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            item.querySelector('.remove-ingredient').addEventListener('click', function() {
+                item.remove();
+                updateBaseIngredientSelect();
+            });
+            
+            editIngredientsList.appendChild(item);
         }
 
-        // ========== CONFIGURAÇÃO DE EVENTOS ==========
+        function updateBaseIngredientSelect() {
+            baseIngredientSelect.innerHTML = '';
+            
+            const ingredients = Array.from(editIngredientsList.querySelectorAll('.ingredient-item span'))
+                .map(span => {
+                    const text = span.textContent.split(' - ')[0];
+                    return text;
+                });
+            
+            ingredients.forEach(ing => {
+                const option = document.createElement('option');
+                option.value = ing;
+                option.textContent = ing;
+                baseIngredientSelect.appendChild(option);
+            });
+        }
+
+        function saveEditedRecipe() {
+            const recipeId = editModal.dataset.recipeId;
+            const isCustom = editModal.dataset.isCustom === 'true';
+            const recipeName = editRecipeName.value;
+            const baseIngredient = baseIngredientSelect.value;
+            
+            if (!recipeName) {
+                showToast('Digite um nome para a receita', 'error');
+                return;
+            }
+            
+            if (!baseIngredient) {
+                showToast('Selecione um ingrediente base', 'error');
+                return;
+            }
+            
+            // Coleta os ingredientes
+            const ingredients = [];
+            editIngredientsList.querySelectorAll('.ingredient-item').forEach(item => {
+                const text = item.querySelector('span').textContent;
+                const [name, amountUnit] = text.split(' - ');
+                const [amount, unit] = amountUnit.split(' ');
+                
+                ingredients.push({
+                    name: name,
+                    originalAmount: parseFloat(amount),
+                    unit: unit
+                });
+            });
+            
+            if (ingredients.length === 0) {
+                showToast('Adicione pelo menos um ingrediente', 'error');
+                return;
+            }
+            
+            // Cria ou atualiza a receita
+            const newRecipe = {
+                id: recipeId,
+                name: recipeName,
+                ingredients: ingredients,
+                baseIngredient: baseIngredient
+            };
+            
+            // Salva a receita
+            customRecipes[recipeId] = newRecipe;
+            localStorage.setItem('customRecipes', JSON.stringify(customRecipes));
+            
+            showToast('Receita salva com sucesso!', 'success');
+            editModal.classList.remove('active');
+            loadRecipes();
+            populateRecipeSelect();
+        }
+
+        function deleteRecipe(recipeId) {
+            if (!confirm('Tem certeza que deseja excluir esta receita?')) return;
+            
+            delete customRecipes[recipeId];
+            localStorage.setItem('customRecipes', JSON.stringify(customRecipes));
+            
+            showToast('Receita excluída', 'success');
+            loadRecipes();
+            populateRecipeSelect();
+        }
+
+        function addNewIngredient() {
+            const name = ingredientNameInput.value;
+            const amount = parseFloat(ingredientAmountInput.value);
+            const unit = ingredientUnitSelect.value;
+            
+            if (!name || isNaN(amount) || amount <= 0) {
+                showToast('Preencha todos os campos do ingrediente', 'error');
+                return;
+            }
+            
+            addIngredientToEditList(name, amount, unit);
+            
+            // Limpa os campos
+            ingredientNameInput.value = '';
+            ingredientAmountInput.value = '';
+            ingredientUnitSelect.value = 'kg';
+            
+            // Atualiza o select de ingrediente base
+            updateBaseIngredientSelect();
+        }
+
+        function showToast(message, type = 'info') {
+            toast.textContent = message;
+            toast.className = 'toast show';
+            
+            if (type === 'error') {
+                toast.style.background = 'var(--danger)';
+            } else if (type === 'success') {
+                toast.style.background = 'var(--success)';
+            } else {
+                toast.style.background = 'var(--dark)';
+            }
+            
+            setTimeout(() => {
+                toast.className = 'toast';
+            }, 3000);
+        }
 
         function setupEventListeners() {
-            // Sistema de modos
-            document.querySelectorAll('.mode-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            // Navegação por abas
+            navTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabName = this.dataset.tab;
+                    
+                    navTabs.forEach(t => t.classList.remove('active'));
                     this.classList.add('active');
                     
-                    const mode = this.dataset.mode;
-                    document.querySelectorAll('.mode-panel').forEach(panel => {
-                        panel.classList.remove('active');
-                    });
-                    document.getElementById(`${mode}-panel`).classList.add('active');
+                    if (tabName === 'calculator') {
+                        calculatorSection.classList.remove('hidden');
+                        recipesSection.classList.add('hidden');
+                    } else {
+                        calculatorSection.classList.add('hidden');
+                        recipesSection.classList.remove('hidden');
+                    }
                 });
             });
-
-            // Modo panificação
-            recipeSelect.addEventListener('change', loadBreadRecipe);
-            calculateBreadBtn.addEventListener('click', calculateBreadRecipe);
-            flourInput.addEventListener('input', calculateBreadRecipe);
-            resetBreadBtn.addEventListener('click', () => {
-                if (currentBreadRecipe) {
-                    const baseIng = currentBreadRecipe.ingredients.find(
-                        ing => ing.name === currentBreadRecipe.baseIngredient
-                    );
-                    if (baseIng) flourInput.value = baseIng.originalAmount;
-                    calculateBreadRecipe();
-                    showToast('Valores resetados', 'success');
+            
+            // Navegação inferior
+            bottomNavItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const tabName = this.dataset.tab;
+                    
+                    bottomNavItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    if (tabName === 'calculator') {
+                        calculatorSection.classList.remove('hidden');
+                        recipesSection.classList.add('hidden');
+                        navTabs[0].classList.add('active');
+                        navTabs[1].classList.remove('active');
+                    } else {
+                        calculatorSection.classList.add('hidden');
+                        recipesSection.classList.remove('hidden');
+                        navTabs[0].classList.remove('active');
+                        navTabs[1].classList.add('active');
+                    }
+                });
+            });
+            
+            // Botão de calcular
+            calculateBtn.addEventListener('click', calculateRecipe);
+            
+            // Multiplicadores rápidos
+            document.querySelectorAll('.quick-multipliers button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const multiplier = parseFloat(this.dataset.mult);
+                    if (!isNaN(multiplier) && flourInput.value) {
+                        flourInput.value = (parseFloat(flourInput.value) * multiplier).toFixed(1);
+                    }
+                });
+            });
+            
+            // Botões de fechar modal
+            closeModalBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    this.closest('.modal-overlay').classList.remove('active');
+                });
+            });
+            
+            // Botões de ação da receita calculada
+            printBtn.addEventListener('click', printRecipe);
+            shareBtn.addEventListener('click', shareRecipe);
+            saveCustomBtn.addEventListener('click', saveCustomRecipe);
+            
+            // Delegação de eventos para as listas de receitas
+            originalRecipesList.addEventListener('click', function(e) {
+                if (e.target.closest('.view-recipe')) {
+                    const recipeId = e.target.closest('.view-recipe').dataset.id;
+                    const isCustom = e.target.closest('.view-recipe').dataset.custom === 'true';
+                    const recipe = isCustom ? customRecipes[recipeId] : breadRecipes[recipeId];
+                    showViewModal(recipe);
                 }
-            });
-            saveBreadBtn.addEventListener('click', saveBreadRecipe);
-            printBreadBtn.addEventListener('click', () => window.print());
-            shareBreadBtn.addEventListener('click', shareBreadRecipe);
-            toggleFavoritesBtn.addEventListener('click', toggleBreadFavorites);
-            breadSearchInput.addEventListener('input', filterBreadRecipes);
-
-            // Multiplicadores rápidos (pães)
-            document.querySelectorAll('#bread-panel .quick-multipliers button').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const multiplier = parseFloat(btn.dataset.mult);
-                    flourInput.value = (parseFloat(flourInput.value) * multiplier).toFixed(1);
-                    calculateBreadRecipe();
-                });
-            });
-
-            // Multiplicadores rápidos (bolos)
-            document.querySelectorAll('#cake-panel .quick-multipliers button').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const multiplier = parseFloat(btn.dataset.mult);
-                    desiredMixInput.value = (defaultCakeSettings.mixAmount * multiplier).toFixed(1);
-                });
-            });
-
-            // Modo bolo
-            saveDefaultsBtn.addEventListener('click', saveDefaultSettings);
-            calculateCakeBtn.addEventListener('click', calculateCakeRecipe);
-            resetCakeBtn.addEventListener('click', resetCakeRecipe);
-            printCakeBtn.addEventListener('click', () => window.print());
-            shareCakeBtn.addEventListener('click', shareCakeRecipe);
-            
-            // Atualiza a mistura desejada quando mudar a padrão
-            defaultMixInput.addEventListener('change', function() {
-                desiredMixInput.value = this.value;
-            });
-        }
-
-        function filterBreadRecipes() {
-            const searchTerm = breadSearchInput.value.toLowerCase();
-            const options = recipeSelect.querySelectorAll('option');
-            
-            options.forEach(option => {
-                if (option.value === "") return;
                 
-                const recipeName = option.textContent.replace(' ★', '').toLowerCase();
-                if (recipeName.includes(searchTerm)) {
-                    option.style.display = '';
-                } else {
-                    option.style.display = 'none';
+                if (e.target.closest('.edit-recipe')) {
+                    const recipeId = e.target.closest('.edit-recipe').dataset.id;
+                    const isCustom = e.target.closest('.edit-recipe').dataset.custom === 'true';
+                    openEditModal(recipeId, isCustom);
                 }
+            });
+            
+            customRecipesList.addEventListener('click', function(e) {
+                if (e.target.closest('.view-recipe')) {
+                    const recipeId = e.target.closest('.view-recipe').dataset.id;
+                    const isCustom = e.target.closest('.view-recipe').dataset.custom === 'true';
+                    const recipe = isCustom ? customRecipes[recipeId] : breadRecipes[recipeId];
+                    showViewModal(recipe);
+                }
+                
+                if (e.target.closest('.edit-recipe')) {
+                    const recipeId = e.target.closest('.edit-recipe').dataset.id;
+                    const isCustom = e.target.closest('.edit-recipe').dataset.custom === 'true';
+                    openEditModal(recipeId, isCustom);
+                }
+                
+                if (e.target.closest('.delete-recipe')) {
+                    const recipeId = e.target.closest('.delete-recipe').dataset.id;
+                    deleteRecipe(recipeId);
+                }
+            });
+            
+            // Eventos do modal de edição
+            addIngredientBtn.addEventListener('click', addNewIngredient);
+            saveRecipeBtn.addEventListener('click', saveEditedRecipe);
+            
+            // Tecla Enter no formulário de ingredientes
+            ingredientNameInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') addNewIngredient();
+            });
+            
+            ingredientAmountInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') addNewIngredient();
+            });
+            
+            // Botão de editar no modal de visualização
+            editRecipeBtn.addEventListener('click', function() {
+                const recipeId = viewModal.dataset.recipeId;
+                const isCustom = viewModal.dataset.isCustom === 'true';
+                viewModal.classList.remove('active');
+                openEditModal(recipeId, isCustom);
             });
         }
     </script>
